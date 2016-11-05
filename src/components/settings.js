@@ -52,22 +52,36 @@ export class ServerSetting extends Component {
   }
 
   handleCheckedChange(event) {
-    this.props.onChange({value: event.target.checked});
+    if (this.props.setting.displayInverted) {
+      this.props.onChange({value: !event.target.checked});
+    } else {
+      this.props.onChange({value: event.target.checked});
+    }
   }
 
   renderBoolean() {
     const id = this.state.id;
+    let hiddenInput;
+    let namePrefix = '';
+    let displayedValue = this.props.setting.value;
+    if (this.props.setting.displayInverted) {
+      hiddenInput = (
+        <input name={this.props.setting.name} value={this.props.setting.value} type="hidden" />        
+      )
+      namePrefix = '__ignore_'
+      displayedValue = !this.props.setting.value;
+    }
     return (
-      <ServerPair id={id} text={this.props.setting.text}>
-        <input id={id} checked={this.props.setting.value} onChange={this.handleCheckedChange} type="checkbox" />
+      <ServerPair id={id} text={this.props.setting.text}>{hiddenInput}
+        <input id={id} name={namePrefix + this.props.setting.name} checked={displayedValue} onChange={this.handleCheckedChange} type="checkbox" />
       </ServerPair>
-    );
+    )
   }
   renderInteger() {
     const id = this.state.id;
     return (
       <ServerPair id={id} text={this.props.setting.text}>
-        <input id={id} value={this.props.setting.value} onChange={this.handleValueChange} type="number" />
+        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="number" />
       </ServerPair>
     );
   }
@@ -75,7 +89,7 @@ export class ServerSetting extends Component {
     const id = this.state.id;
     return (
       <ServerPair id={id} text={this.props.setting.text}>
-        <input id={id} value={this.props.setting.value} onChange={this.handleValueChange} type="password" />
+        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="password" />
       </ServerPair>
     );
   }
@@ -83,7 +97,7 @@ export class ServerSetting extends Component {
     const id = this.state.id;
     return (
       <ServerPair id={id} text={this.props.setting.text}>
-        <select onChange={this.handleValueChange} value={this.props.setting.value}>
+        <select id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange}>
           {
             this.props.setting.choices.map(function (choice) {
               return <option key={choice.value} value={choice.value}>{choice.name}</option>;
