@@ -85,7 +85,7 @@ class SettingPage extends Component {
                 <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
                 <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
                 <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
-                <input name="reload" value="Check (do not save)" type="submit" /><input name="save" value="Save &amp; generate server" type="submit" /></form>
+                <input name="__reload" value="Check (do not save)" type="submit" /><input name="__save" value="Save &amp; generate server" type="submit" /></form>
             </td>
             <td style={alignTop}>
               <div>Global presets:<br />
