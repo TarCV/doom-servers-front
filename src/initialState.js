@@ -1,17 +1,19 @@
 let mapSettings = [
   { type: 'choice', name: '__mappreset', text: 'Preset', choices: [] },
   {
-    type: 'choice', name: 'gametype1', text: 'Game mode', choices: [
-      { name: 'Cooperative', value: 0 },
-      { name: "Deathmatch", value: 1 },
-      { name: "CTF", value: 2 }
+    type: 'choice', name: '__gameMode', text: 'Game mode', choices: [
+      { name: 'Cooperative', value: 'coop' },
+      { name: "Deathmatch", value: 'deathmatch' },
+      { name: "CTF", value: 'ctf' }
     ]
   },
   { type: 'boolean', name: 'forcewater', text: 'Force water' },
   { type: 'boolean', name: 'sv_voodoo_spawns', text: 'Enable limited voodoo doll support' },
   { type: 'boolean', name: 'var_pushers', text: 'Enable wind (BOOM push/pull effects)' },
   { type: 'boolean', name: 'unknown1', text: 'Old style CTF compatibility mode' },
-  { type: 'boolean', name: 'unknown2', text: 'Allow jumping' },
+  { type: 'boolean', name: 'SV_NoJump', text: 'Allow jumping (but abide MAPINFO)', displayInverted: true },
+  { type: 'boolean', name: 'SV_NoFreelook', text: 'Allow freelook', displayInverted: true },
+  { type: 'boolean', name: 'SV_NoCrouch', text: 'Allow crouch (but abide MAPINFO)', displayInverted: true },
   { type: 'integer', name: 'sv_splashfactor', text: 'Splash factor', value: '1' },
   { type: 'integer', name: 'maxlostsouls', text: 'Maximum lost souls allowed to spawn', value: '20' },
   { type: 'boolean', name: 'var_friction', text: 'Enable ice (BOOM friction effects)' },
@@ -51,29 +53,46 @@ let gameplaySettings = [
       { value: 1, name: 'force respawn' }
     ]
   },
-  { type: 'boolean', name:   'unknown37', text: 'Spawn health (DM)' },
-  { type: 'boolean', name: 'unknown38', text: 'Spawn powerups (DM)' },
-  { type: 'boolean', name: 'unknown39', text: 'Weapon stay (DM)' },
-  { type: 'boolean', name: 'unknown40', text: 'Kill on exit (DM)' },
-  { type: 'boolean', name: 'unknown41', text: 'Falling damage as in ZDoom' },
-  { type: 'boolean', name: 'unknown42', text: 'Falling damage as in Hexen' },
-  { type: 'boolean', name: 'unknown43', text: 'Advance map on exit (DM)' },
-  { type: 'boolean', name: 'unknown44', text: 'Spawn farthest (DM)' },
-  { type: 'boolean', name: 'unknown1', text: 'Spawn armor (DM)' },
-  { type: 'boolean', name: 'unknown2', text: 'Allow exit (DM)' },
-  { type: 'boolean', name: 'unknown3', text: 'Infinite ammo' },
-  { type: 'boolean', name: 'unknown4', text: 'Spawn monsters' },
-  { type: 'boolean', name: 'unknown5', text: 'Respawn monsters' },
-  { type: 'boolean', name: 'unknown6', text: 'Respawn items' },
-  { type: 'boolean', name: 'unknown7', text: 'Fast monsters' },
-  { type: 'boolean', name: 'unknown8', text: 'Allow freelook' },
-  { type: 'boolean', name: 'unknown9', text: "Respawn 'Mega' items" },
-  { type: 'boolean', name: 'unknown10', text: 'Spawn spheres' },
+
+  //DmFlags
+  { type: 'boolean', name: 'SV_NoHealth', displayInverted: true , text: 'Spawn health (DM)' },
+  { type: 'boolean', name: 'SV_NoItems', displayInverted: true , text: 'Spawn powerups (DM)' },
+  { type: 'boolean', name: 'SV_WeaponStay', text: 'Weapon stay (DM)' },
+  { type: 'choice', name: '__fallingDamage', text: 'Falling damage formula', choices: [
+      { value: 'default', name: 'Default' },
+      { value: 'zdoom', name: 'ZDoom' },
+      { value: 'hexen', name: 'Hexen' },
+      { value: 'strife', name: 'Strife' }
+  ] },
+  { type: 'boolean', name: 'SV_NoExit', text: 'Kill on exit (DM)' },
+  { type: 'boolean', name: 'SV_SameLevel', text: 'Advance map on exit (DM)', displayInverted: true },
+  { type: 'boolean', name: 'SV_SpawnFarthest', text: 'Spawn farthest (DM)' },
+  { type: 'boolean', name: 'SV_NoArmor', text: 'Spawn armor (DM)', displayInverted: true },
+  { type: 'boolean', name: 'SV_InfiniteAmmo', text: 'Infinite ammo' },
+  { type: 'boolean', name: 'SV_NoMonsters', text: 'Spawn monsters', displayInverted: true },
+  { type: 'boolean', name: 'SV_MonsterRespawn', text: 'Respawn monsters' },
+  { type: 'boolean', name: 'SV_ItemRespawn', text: 'Respawn items' },
+  { type: 'boolean', name: 'SV_FastMonsters', text: 'Fast monsters' },
+  { type: 'boolean', name: 'SV_RespawnSuper', text: "Respawn 'Mega' items" },
+  { type: 'boolean', name: 'SV_NoFOV', text: "Allow custom FOV", displayInverted: true },
+  { type: 'boolean', name: 'SV_NoWeaponSpawn', text: "Spawm multiplayer weapons (COOP)", displayInverted: true },
+  { type: 'boolean', name: 'SV_Coop_LoseInventory', text: 'Lose inventory when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseKeys', text: 'Lose keys when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseWeapons', text: 'Lose weapons when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseArmor', text: 'Lose armor when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LosePowerups', text: 'Lose powerups when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseAmmo', text: 'Lose ammo when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_HalveAmmo', text: 'Halve ammo when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseKeys', text: 'Lose keys when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseKeys', text: 'Lose keys when killed (COOP)' },
+  { type: 'boolean', name: 'SV_Coop_LoseKeys', text: 'Lose keys when killed (COOP)' },
+  { type: 'boolean', name: 'SV_AllowJump', text: 'Allow jumping (override MAPINFO)' },
+  { type: 'boolean', name: 'SV_AllowCrouch', text: 'Allow crouch (override MAPINFO)' },
+  { type: 'boolean', name: 'unknown10', text: 'Spawn runes' },
   { type: 'boolean', name: 'unknown11', text: 'Allow crosshair' },
   { type: 'boolean', name: 'unknown12', text: 'Old style thrusting' },
   { type: 'boolean', name: 'unknown13', text: 'Keys stay in team modes' },
   { type: 'boolean', name: 'unknown14', text: 'Hide player countries' },
-  { type: 'boolean', name: 'sv_teamautoaim', text: 'Exclude teammates from autoaim' },
   { type: 'boolean', name: 'unknown15', text: 'Missiles can teleport' },
   { type: 'boolean', name: 'unknown16', text: 'Players drop weapons when they die' },
   { type: 'boolean', name: 'unknown17', text: 'Spawn where died (COOP)' },
@@ -95,7 +114,8 @@ let gameplaySettings = [
   { type: 'boolean', name: 'unknown33', text: 'Assign team keys' },
   { type: 'boolean', name: 'unknown34', text: 'Vampire mode' },
   { type: 'boolean', name: 'unknown35', text: 'Instant weapon switching' },
-  { type: 'boolean', name: 'unknown36', text: 'Show target names' }
+  { type: 'boolean', name: 'unknown36', text: 'Show target names' },
+  { type: 'boolean', name: 'sv_teamautoaim', text: 'Exclude teammates from autoaim' },
 ]
 
 let serverSettings = [
