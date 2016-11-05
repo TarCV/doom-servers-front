@@ -78,10 +78,10 @@ class SettingPage extends Component {
         <tbody>
           <tr>
             <td>
-              <form method="post" action="process.php">Load settings from file:
+              <form method="post" action=".">Load settings from file:
         <input name="config" type="file" /><input value="Load" type="submit" />
               </form>
-              <form method="post" action="process.php">
+              <form method="post" action="http://localhost:8080/server/run">
                 <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
                 <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
                 <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
