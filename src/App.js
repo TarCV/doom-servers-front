@@ -82,6 +82,7 @@ class SettingPage extends Component {
         <input name="config" type="file" /><input value="Load" type="submit" />
               </form>
               <form method="post" action="http://localhost:8080/server/run">
+                <input name="__engine" value="zandronum" type="hidden" />
                 <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
                 <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
                 <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
