@@ -6,6 +6,7 @@ import { createStore } from 'redux'
 import { appReducer } from './reducers.js'
 import { ServerPair } from './components/settings.js'
 import { SettingBlock } from './components/settingBlock.js'
+import { Console } from './components/Console.js'
 
 let rest = require('rest');
 let mime = require('rest/interceptor/mime');
@@ -141,6 +142,7 @@ class SettingPage extends Component {
         <tbody>
           <tr>
             <td>
+              <Console log={[{key: 0, text: 'aaa'},{key: 1, text: 'bbb'},{key: 2, text: 'ccc'}]} />
             </td>
           </tr>
           <tr>
