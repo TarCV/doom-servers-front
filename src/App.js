@@ -7,6 +7,12 @@ import { appReducer } from './reducers.js'
 import { ServerPair } from './components/settings.js'
 import { SettingBlock } from './components/settingBlock.js'
 
+let rest = require('rest');
+let mime = require('rest/interceptor/mime');
+let registry = require('rest/mime/registry');
+let client = rest
+  .wrap(mime, { registry: registry });
+
 let leftCaption = { captionSide: 'left' };
 let hiddenStyle = { display: 'none' }
 let fullWidth = { width: '100%' }
@@ -71,28 +77,80 @@ class ServerSettings extends Component {
 }
 
 class SettingPage extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      settings : {}
+    }
+    this.onSave = this.onSave.bind(this);
+  }
+  onSave(e) {
+    e.preventDefault();
+
+    let settingsObject = [].concat(this.state.settings.server, this.state.settings.gameplay, this.state.settings.map)
+      .reduce((prev, curr) => {
+        if (prev.hasOwnProperty(curr.name)) {
+          console.warn("Duplicate setting: " + curr.name);
+        }
+        prev[curr.name] = curr.value;
+        return prev;
+      }, {})
+    client({
+      method: 'PATCH',
+      path: 'https://localhost:8443/server/1/run',
+      entity: settingsObject,
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then(function(response) {
+      console.log('response: ', response);
+    });
+  }
+  fixValue(type, stringValue) {
+    try {
+      return JSON.parse(`{"val": ${stringValue}}`).val;
+    } catch (e) {
+      return stringValue;
+    }
+  }
+  componentDidMount() {
+    let self = this;
+    fetch('https://localhost:8443/settings/byEngine?engine=zandronum')
+      .then(response => response.json())
+      .then(json => 
+        Object.keys(json).reduce((y, key) => Object.assign(y, { 
+          [key] : json[key].map(setting => {
+            //console.debug(setting);
+            let newVal = Object.assign({}, (setting.options && JSON.parse('{' + setting.options + '}')), setting);
+            newVal.text = newVal.description; delete newVal['description'];
+            newVal.value = self.fixValue(newVal.type, newVal.defaultValue); delete newVal['defaultValue'];
+            return newVal;
+          })
+        }), {})
+      )
+      .then(json => {
+        console.debug(json.map);
+          self.setState({
+            settings: json
+          });
+      })
+  }
   render() {
-    const initialSettings = this.props.initialSettings;
+    const initialSettings = this.state.settings;
     return (
       <table style={fullWidth}>
         <tbody>
           <tr>
             <td>
-              <form method="post" action=".">Load settings from file:
-        <input name="config" type="file" /><input value="Load" type="submit" />
-              </form>
-              <form method="post" action="https://localhost:8443/server/run">
-                <input name="__engine" value="zandronum" type="hidden" />
-                <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
-                <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
-                <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
-                <input name="__reload" value="Check (do not save)" type="submit" /><input name="__save" value="Save &amp; generate server" type="submit" /></form>
             </td>
-            <td style={alignTop}>
-              <div>Global presets:<br />
-                <input name="d" value="oldschool" type="button" /><br />
-                <input name="d" value="rocket jump" type="button" /><br />
-              </div>
+          </tr>
+          <tr>
+            <td>
+              <input name="config" type="file" /><input value="Load" type="submit" />
+              <input name="__engine" value="zandronum" type="hidden" />
+              <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
+              <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
+              <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
+              <button onClick={this.onSave}>Save &amp; generate server</button>
             </td>
           </tr>
         </tbody>

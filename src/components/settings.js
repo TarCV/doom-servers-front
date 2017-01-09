@@ -107,19 +107,27 @@ export class ServerSetting extends Component {
       </ServerPair>
     );
   }
+  renderUnknown() {
+    const id = this.state.id;
+    return (
+      <ServerPair id={id} text={this.props.setting.text} />
+    );
+  }
 
   typeToRenderer(type) {
-    switch (type) {
-      case "boolean":
+    switch (type.toLowerCase()) {
+      case "bool":
         return this.renderBoolean;
-      case "integer":
+      case "int":
+      case "float":
         return this.renderInteger;
       case "password":
         return this.renderPassword;
       case "choice":
         return this.renderChoice;
       default:
-        return "ServerPair";
+        console.warn(`Unknown setting type: ${type}`);
+        return this.renderUnknown;
     }
   }
 

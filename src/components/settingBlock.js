@@ -10,7 +10,8 @@ export class SettingBlock extends Component {
   render() {
     const onChangeHandler = this.props.onChange;
     const blockName = this.props.name;
-    let items = this.props.settings.slice()
+    const fixedSettings = this.props.settings || [];
+    let items = fixedSettings.slice()
     items.sort((a, b) => a.text.localeCompare(b.text))
     items = items.map((setting) => {
       const itemOnChange = function (event) { onChangeHandler.apply(null, [{block: blockName, name: setting.name, value: event.value}]) }
