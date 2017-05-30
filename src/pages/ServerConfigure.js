@@ -3,10 +3,10 @@ import prefix from 'react-prefixer';
 //import './App.css';
 
 import { createStore } from 'redux'
-import { appReducer } from './reducers.js'
-import { ServerPair } from './components/settings.js'
-import { SettingBlock } from './components/settingBlock.js'
-import { Console } from './components/Console.js'
+import { appReducer } from '../reducers.js'
+import { FieldLine } from '../components/FieldLine.js'
+import { SortedBlock } from '../components/SortedBlock.js'
+import { Console } from '../components/Console.js'
 
 let rest = require('rest');
 let mime = require('rest/interceptor/mime');
@@ -39,7 +39,7 @@ class MapSettings extends Component {
     return (
       <fieldset><legend style={leftCaption}>WAD settings</legend>
         <div style={columnsDiv}>
-          <ServerPair text='Required files (PWADs)'>
+          <FieldLine text='Required files (PWADs)'>
             <input name="files" style={fullWidth} />
             <select name="file" style={hiddenStyle}>
             </select>
@@ -47,21 +47,10 @@ class MapSettings extends Component {
               <select name="filetoadd">
               </select>
               <button disabled="disabled" value="+" name="addpwad" type="button"></button></div>
-          </ServerPair>
+          </FieldLine>
         </div>
 
-        <SettingBlock settings={this.props.settings} name='map' onChange={this.props.onChange} />
-      </fieldset>
-    )
-  }
-}
-
-class GameplaySettings extends Component {
-  render() {
-    return (
-      <fieldset>
-        <legend>Gameplay settings</legend>
-        <SettingBlock settings={this.props.settings} name='gameplay' onChange={this.props.onChange} />
+        <SortedBlock settings={this.props.settings} name='map' onChange={this.props.onChange} />
       </fieldset>
     )
   }
@@ -70,8 +59,19 @@ class GameplaySettings extends Component {
 class ServerSettings extends Component {
   render() {
     return (
+      <fieldset>
+        <legend>Gameplay settings</legend>
+        <SortedBlock settings={this.props.settings} name='gameplay' onChange={this.props.onChange} />
+      </fieldset>
+    )
+  }
+}
+
+class CompleteFields extends Component {
+  render() {
+    return (
       <fieldset><legend>Server settings</legend>
-        <SettingBlock settings={this.props.settings} name='server' onChange={this.props.onChange} />
+        <SortedBlock settings={this.props.settings} name='server' onChange={this.props.onChange} />
       </fieldset>
     )
   }
@@ -117,8 +117,8 @@ class SettingPage extends Component {
     let self = this;
     fetch('https://localhost:8443/settings/byEngine?engine=zandronum')
       .then(response => response.json())
-      .then(json => 
-        Object.keys(json).reduce((y, key) => Object.assign(y, { 
+      .then(json =>
+        Object.keys(json).reduce((y, key) => Object.assign(y, {
           [key] : json[key].map(setting => {
             //console.debug(setting);
             let newVal = Object.assign({}, (setting.options && JSON.parse('{' + setting.options + '}')), setting);
@@ -150,8 +150,8 @@ class SettingPage extends Component {
               <input name="config" type="file" /><input value="Load" type="submit" />
               <input name="__engine" value="zandronum" type="hidden" />
               <MapSettings settings={initialSettings.map} onChange={this.props.onChange} />
-              <GameplaySettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
-              <ServerSettings settings={initialSettings.server} onChange={this.props.onChange} />
+              <ServerSettings settings={initialSettings.gameplay} onChange={this.props.onChange} />
+              <CompleteFields settings={initialSettings.server} onChange={this.props.onChange} />
               <button onClick={this.onSave}>Save &amp; generate server</button>
             </td>
           </tr>

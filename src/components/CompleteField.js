@@ -1,41 +1,8 @@
 import React, { Component, PropTypes } from 'react';
+import { FieldLine } from './FieldLine';
 import _ from 'underscore';
 
-let tableFullWidth = {
-  textAlign: 'left',
-  width: '100%',
-  border: 'none'
-}
-let labelCell = {
-  textAlign: 'right',
-  vtextAlign: 'top'
-}
-let valueCell = {
-  textAlign: 'left',
-  vtextAlign: 'top',
-  width: '10em'
-}
-
-export class ServerPair extends Component {
-  render() {
-    return (
-      <table style={tableFullWidth}>
-        <tbody>
-          <tr>
-            <td style={labelCell}><label htmlFor={this.props.id}>{this.props.text}</label></td>
-            <td style={valueCell}>{this.props.children}</td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  }
-}
-ServerPair.propTypes = {
-  id: PropTypes.string,
-  text: PropTypes.string.isRequired
-}
-
-export class ServerSetting extends Component {
+export class CompleteField extends Component {
   constructor (props) {
     super(props)
     this.handleValueChange = this.handleValueChange.bind(this)
@@ -66,37 +33,37 @@ export class ServerSetting extends Component {
     let displayedValue = this.props.setting.value;
     if (this.props.setting.displayInverted) {
       hiddenInput = (
-        <input name={this.props.setting.name} value={this.props.setting.value} type="hidden" />        
+        <input name={this.props.setting.name} value={this.props.setting.value} type="hidden" />
       )
       namePrefix = '__ignore_'
       displayedValue = !this.props.setting.value;
     }
     return (
-      <ServerPair id={id} text={this.props.setting.text}>{hiddenInput}
+      <FieldLine id={id} text={this.props.setting.text}>{hiddenInput}
         <input id={id} name={namePrefix + this.props.setting.name} checked={displayedValue} onChange={this.handleCheckedChange} type="checkbox" />
-      </ServerPair>
+      </FieldLine>
     )
   }
   renderInteger() {
     const id = this.state.id;
     return (
-      <ServerPair id={id} text={this.props.setting.text}>
+      <FieldLine id={id} text={this.props.setting.text}>
         <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="number" />
-      </ServerPair>
+      </FieldLine>
     );
   }
   renderPassword() {
     const id = this.state.id;
     return (
-      <ServerPair id={id} text={this.props.setting.text}>
+      <FieldLine id={id} text={this.props.setting.text}>
         <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="password" />
-      </ServerPair>
+      </FieldLine>
     );
   }
   renderChoice() {
     const id = this.state.id;
     return (
-      <ServerPair id={id} text={this.props.setting.text}>
+      <FieldLine id={id} text={this.props.setting.text}>
         <select id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange}>
           {
             this.props.setting.choices.map(function (choice) {
@@ -104,13 +71,29 @@ export class ServerSetting extends Component {
             })
           }
         </select>
-      </ServerPair>
+      </FieldLine>
+    );
+  }
+  renderEmail() {
+    const id = this.state.id;
+    return (
+      <FieldLine id={id} text={this.props.setting.text}>
+        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="email" />
+      </FieldLine>
+    );
+  }
+  renderRegisterLogin() {
+    const id = this.state.id;
+    return (
+      <FieldLine id={id} text={this.props.setting.text}>
+        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} pattern="[a-z-]{3,15}" />
+      </FieldLine>
     );
   }
   renderUnknown() {
     const id = this.state.id;
     return (
-      <ServerPair id={id} text={this.props.setting.text} />
+      <FieldLine id={id} text={this.props.setting.text} />
     );
   }
 
@@ -125,6 +108,10 @@ export class ServerSetting extends Component {
         return this.renderPassword;
       case "choice":
         return this.renderChoice;
+      case "email":
+        return this.renderEmail;
+      case "register.login":
+        return this.renderRegisterLogin;
       default:
         console.warn(`Unknown setting type: ${type}`);
         return this.renderUnknown;
@@ -136,7 +123,7 @@ export class ServerSetting extends Component {
     return renderer.apply(this)
   }
 }
-ServerSetting.propTypes = {
+CompleteField.propTypes = {
   id: PropTypes.string,
   setting: PropTypes.object,
   onChange: PropTypes.func.isRequired
