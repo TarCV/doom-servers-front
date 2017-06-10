@@ -17,7 +17,7 @@ import {
 const routes = [
   { path: '/', name: 'Home', component: <Home /> },
   { path: '/login', name: 'Login', component: <Login /> },
-  { path: '/register', name: 'Sign Up', creater: (props) => <ConnectedRegister onSave={props.onRegister} /> },
+  { path: '/register', name: 'Sign Up', component: <ConnectedRegister /> },
   { path: '/servers', name: 'Servers', component: <ServerList /> },
   { path: '/servers/:serverId', name: 'Server info', component: <Server /> },
   { path: '/servers/:serverId/configure', name: 'Customize Server', component: <ServerConfigure /> },

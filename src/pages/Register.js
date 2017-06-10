@@ -1,8 +1,5 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import prefix from 'react-prefixer';
-
-import { UnsortedBlock } from '../components/UnsortedBlock';
 import { Form } from '../components/Form';
 
 const signupForm = [
@@ -14,28 +11,24 @@ const resendForm = [
   { name: 'mail', text: 'E-mail', type: 'email', value: '' },
 ];
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
-  }
+class Register extends PureComponent {
   render() {
-    console.log('mailSent', this.props.mailSent);
     if (this.props.mailSent) {
-        return (
+      return (
           <Form
-             onSubmit={this.onSendAgain}
-             form={resendForm}
-             submitTitle='Send again'
-             defaults={{ mail: this.props.mailSent }}
-           />
+            onSubmit={this.props.onSendAgain}
+            form={resendForm}
+            submitTitle='Send again'
+            defaults={{ mail: this.props.mailSent }}
+          />
         );
     }
     return (
       <Form
-         onSubmit={this.props.onSave}
-         form={signupForm}
-         submitTitle='Sign up'
-        />
+        onSubmit={this.props.onSave}
+        form={signupForm}
+        submitTitle='Sign up'
+      />
     );
   }
 }
@@ -44,12 +37,19 @@ const mapStateToProps = (state) => {
   return {
     mailSent: state.registration.mailSent,
     token: state.registration.token
-  }
-}
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSave: (data) => dispatch({ type: 'REGISTER_ATTEMPT', payload: data }),
+    onSendAgain: (data) => dispatch({ type: 'REGISTER_CHANGE_MAIL', payload: data }),
+  };
+};
 
 const ConnectedRegister = connect(
   mapStateToProps,
-//  mapDispatchToProps
+  mapDispatchToProps
 )(Register)
 
 export default ConnectedRegister;

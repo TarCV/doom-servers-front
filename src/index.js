@@ -32,14 +32,10 @@ const store = createStore(
 
 sagaMiddleware.run(rootSaga);
 
-const action = (type, payload) => store.dispatch({ type, payload });
-
 render((
   <div>
     <Provider store={store}>
-      <App
-        onRegister={(data) => action('REGISTER_ATTEMPT', data)}
-      />
+      <App />
     </Provider>
     <DockableSagaView monitor={monitor} />
   </div>
