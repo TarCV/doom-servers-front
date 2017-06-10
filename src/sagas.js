@@ -96,10 +96,17 @@ function createRequestSaga(endpoint, method, actionPrefix) {
   };
 }
 
-export const tryLoginSaga = createRequestSaga('/login', {}, 'LOGIN');
-
-export function* loginSaga() {
-  yield takeFirst('LOGIN_ATTEMPT', tryLoginSaga);
+function* loginSaga() {
+  while (true) {// TODO: use takeEvery to not block new requests during executed workflow
+    const action = yield take('LOGIN_ATTEMPT');
+    try {
+      const loginResult = yield call(request, '/login', 'POST', action.payload);
+      yield put({ type: 'LOGIN_SUCCESS', payload: { login: loginResult.login }});
+    } catch (e) {
+      console.error(e);
+      yield put({ type: 'LOGIN_ERROR', payload: e });
+    }
+  }
 }
 
 export default function* rootSaga() {
