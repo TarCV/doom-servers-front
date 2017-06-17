@@ -34,7 +34,9 @@ class Logout extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    authInfo: state.authentication.token
+    authInfo: {
+      token: state.authentication.token
+    }
   };
 };
 

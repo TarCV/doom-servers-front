@@ -114,7 +114,7 @@ function* loginSaga() {
 }
 
 function* logoutSaga() {
-  takeLatest(function *logoutDo(action) {
+  yield takeLatest('LOGOUT_ATTEMPT', function *logoutDo(action) {
     try {
       const logoutResult = yield call(request, '/logout', 'POST', action.payload);
       yield put({ type: 'LOGOUT_SUCCESS', payload: { login: logoutResult.login }});
@@ -129,5 +129,6 @@ export default function* rootSaga() {
   yield [
     registerSaga(),
     loginSaga(),
+    logoutSaga()
   ];
 }

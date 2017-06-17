@@ -1,15 +1,9 @@
 import { combineReducers } from 'redux';
-import {
-  CHANGE,
-  REGISTER_MAIL_SENT,
-  LOGIN_SUCCESS,
-  LOGOUT_SUCCESS,
-  LOCATION_REDIRECT
-} from './actions';
+import * as a from './actions';
 
 function initialSettings(state = {}, action) {
   switch (action.type) {
-    case CHANGE:
+    case a.CHANGE:
       if (state[action.block]) {
         const block = {};
         block[action.block] = state[action.block].map((setting) => {
@@ -29,7 +23,7 @@ function initialSettings(state = {}, action) {
 
 function registration(state = {}, action) {
   switch (action.type) {
-    case REGISTER_MAIL_SENT:
+    case a.REGISTER_MAIL_SENT:
       return Object.assign({}, state, {
         mailSent: action.payload.mail,
         token: action.payload.token
@@ -41,12 +35,21 @@ function registration(state = {}, action) {
 
 function authentication(state = {}, action) {
   switch (action.type) {
-    case LOGIN_SUCCESS:
+    case a.LOGIN_SUCCESS:
       return Object.assign({}, state, {
         name: action.payload.login,
-        token: action.payload.token
+        token: action.payload.token,
+        loginError: undefined
       });
-    case LOGOUT_SUCCESS:
+    case a.LOGIN_ERROR:
+      return Object.assign({}, state, {
+        loginError: action.payload
+      });
+    case a.LOGOUT_ERROR:
+    return Object.assign({}, state, {
+      logoutError: action.payload
+    });
+    case a.LOGOUT_SUCCESS:
       return {};
     default:
       return state;
@@ -55,7 +58,7 @@ function authentication(state = {}, action) {
 
 function location(state = {}, action) {
   switch (action.type) {
-    case LOCATION_REDIRECT:
+    case a.LOCATION_REDIRECT:
       return {
         redirectTo: action.payload.location
       }
