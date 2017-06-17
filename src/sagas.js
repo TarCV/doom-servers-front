@@ -1,7 +1,5 @@
-import { call, fork, put, take, takeEvery } from 'redux-saga/effects';
+import { call, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import FetchPonyfill from 'fetch-ponyfill';
-//import history from './history';
-
 const { fetch, Request, Response, Headers } = FetchPonyfill();
 
 // TODO: move to utils
@@ -101,12 +99,30 @@ function* loginSaga() {
     const action = yield take('LOGIN_ATTEMPT');
     try {
       const loginResult = yield call(request, '/login', 'POST', action.payload);
-      yield put({ type: 'LOGIN_SUCCESS', payload: { login: loginResult.login }});
+      yield put({ type: 'LOGIN_SUCCESS', payload: {
+        login: loginResult.login,
+        token: loginResult.token,
+      }});
+      yield put({ type: 'LOCATION_REDIRECT', payload: {
+        location: '/'
+      }})
     } catch (e) {
       console.error(e);
       yield put({ type: 'LOGIN_ERROR', payload: e });
     }
   }
+}
+
+function* logoutSaga() {
+  takeLatest(function *logoutDo(action) {
+    try {
+      const logoutResult = yield call(request, '/logout', 'POST', action.payload);
+      yield put({ type: 'LOGOUT_SUCCESS', payload: { login: logoutResult.login }});
+    } catch (e) {
+      console.error(e);
+      yield put({ type: 'LOGOUT_ERROR', payload: e });
+    }
+  })
 }
 
 export default function* rootSaga() {
