@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BlockTable } from '../components/BlockTable';
+import { Alert } from 'reactstrap';
 
 export class Form extends Component {
   constructor(props) {
@@ -38,13 +39,25 @@ export class Form extends Component {
       }
       return setting;
     })
+
+    let error;
+    if (this.props.error) {
+      error = (
+        <Alert color='danger'>
+          { this.props.error ? this.props.error.message : 'Unknown error' }
+        </Alert>
+      );
+    }
+
     return (
       <form onSubmit={this.onSubmit}>
         <div style={{ textAlign: 'center' }}>
+          {error}
           <BlockTable
             name="form" multiColumn={false}
             settings={ form } onChange={this.onChange}
             style={{ margin: '0 auto', width: 'auto' }}
+            errors={this.props.error && this.props.error.fields}
           />
           <input type='submit' value={this.props.submitTitle} />
         </div>

@@ -28,6 +28,11 @@ function registration(state = {}, action) {
         mailSent: action.payload.mail,
         token: action.payload.token
       });
+      case a.REGISTER_ERROR:
+      case a.REGISTER_CHANGEMAIL_ERROR:
+        return Object.assign({}, state, {
+          error: action.payload
+        });
     default:
       return state;
   }

@@ -28,6 +28,7 @@ class Register extends PureComponent {
         onSubmit={this.props.onSave}
         form={signupForm}
         submitTitle='Sign up'
+        error={this.props.error}
       />
     );
   }
@@ -36,7 +37,8 @@ class Register extends PureComponent {
 const mapStateToProps = (state) => {
   return {
     mailSent: state.registration.mailSent,
-    token: state.registration.token
+    token: state.registration.token,
+    error: state.registration.error
   };
 };
 

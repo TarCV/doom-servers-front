@@ -2,6 +2,14 @@ import { call, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects
 import FetchPonyfill from 'fetch-ponyfill';
 const { fetch, Request, Response, Headers } = FetchPonyfill();
 
+function FormError(e) {
+  if (typeof e === 'string') {
+    this.message = e;
+  } else {
+    Object.assign(this, e);
+  }
+}
+
 // TODO: move to utils
 function* takeFirst(pattern, saga, ...args) {
   const task = yield fork(function* taker () {
@@ -13,24 +21,56 @@ function* takeFirst(pattern, saga, ...args) {
   return task;
 }
 
-function parseJSON(response) {
-  return response.json();
+function translateUnknownError(response) {
+  if (response && response.statusText) {
+    // Something unexpected happened
+    let message = 'Unknown error';
+    if (response && response.statusText) message += `: ${response.statusText}`
+    return new FormError({
+      message,
+      response
+    });
+  }
 }
 
-function checkStatus(response) {
+function parse(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return response
+      .json()
+      .catch(exception => new FormError({
+        message: 'Response is damaged',
+        response,
+        exception
+      }))
   }
 
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
+  if (response.status == 400) {
+    // Probably we got error info object in JSON format
+    const error = response.json();
+    return error.then(
+      parsed => new FormError(parsed),
+      parseError => {
+        // not a JSON
+        console.warn(parseError);
+        return translateUnknownError(response);
+      }
+    );
+  }
+
+  return translateUnknownError(response);
 }
 
 export function requestRaw(endpoint, options) {
   return fetch(`http://localhost:8000${endpoint}`, options)
-    .then(checkStatus)
-    .then(parseJSON);
+    .then(
+      parse,
+      exception => new FormError ({ message: 'Network error', exception })
+    )
+    .catch(exception => new FormError ({ message: 'Unknown error', exception }))
+    .then(result => {
+      if (result instanceof FormError)  throw result;
+      return result;
+    })
 }
 
 export function request(endpoint, method, body) {

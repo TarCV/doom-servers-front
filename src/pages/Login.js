@@ -10,17 +10,21 @@ const loginForm = [
 class Login extends PureComponent {
   render() {
     return (
+      <div>
         <Form
           form={loginForm}
           onSubmit={this.props.onSave}
           submitTitle='Sign In'
+          error={this.props.error}
         />
+      </div>
     );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
+    error: state.authentication.loginError
   };
 };
 

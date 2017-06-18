@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { FieldLine } from './FieldLine';
+import { Input } from 'reactstrap';
 import _ from 'underscore';
 
 export class CompleteField extends Component {
@@ -33,37 +34,36 @@ export class CompleteField extends Component {
     let displayedValue = this.props.setting.value;
     if (this.props.setting.displayInverted) {
       hiddenInput = (
-        <input name={this.props.setting.name} value={this.props.setting.value} type="hidden" />
+        <Input name={this.props.setting.name} value={this.props.setting.value} type="hidden" />
       )
       namePrefix = '__ignore_'
       displayedValue = !this.props.setting.value;
     }
-    return (
-      <FieldLine id={id} text={this.props.setting.text}>{hiddenInput}
-        <input id={id} name={namePrefix + this.props.setting.name} checked={displayedValue} onChange={this.handleCheckedChange} type="checkbox" />
-      </FieldLine>
-    )
+    return [
+      {hiddenInput},
+      <Input id={id} name={namePrefix + this.props.setting.name} checked={displayedValue} onChange={this.handleCheckedChange} type="checkbox" />
+    ]
   }
   renderInteger() {
     const id = this.state.id;
     return (
-      <FieldLine id={id} text={this.props.setting.text}>
-        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="number" />
-      </FieldLine>
+
+        <Input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="number" />
+
     );
   }
   renderPassword() {
     const id = this.state.id;
     return (
-      <FieldLine id={id} text={this.props.setting.text}>
-        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="password" />
-      </FieldLine>
+
+        <Input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="password" />
+
     );
   }
   renderChoice() {
     const id = this.state.id;
     return (
-      <FieldLine id={id} text={this.props.setting.text}>
+
         <select id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange}>
           {
             this.props.setting.choices.map(function (choice) {
@@ -71,30 +71,27 @@ export class CompleteField extends Component {
             })
           }
         </select>
-      </FieldLine>
+
     );
   }
   renderEmail() {
     const id = this.state.id;
     return (
-      <FieldLine id={id} text={this.props.setting.text}>
-        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="email" />
-      </FieldLine>
+
+        <Input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} type="email" />
+
     );
   }
   renderRegisterLogin() {
     const id = this.state.id;
     return (
-      <FieldLine id={id} text={this.props.setting.text}>
-        <input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} pattern="[a-z-]{3,15}" />
-      </FieldLine>
+
+        <Input id={id} name={this.props.setting.name} value={this.props.setting.value} onChange={this.handleValueChange} pattern="[a-z-]{3,15}" />
+
     );
   }
   renderUnknown() {
-    const id = this.state.id;
-    return (
-      <FieldLine id={id} text={this.props.setting.text} />
-    );
+    return [];
   }
 
   typeToRenderer(type) {
@@ -120,7 +117,10 @@ export class CompleteField extends Component {
 
   render() {
     const renderer = this.typeToRenderer(this.props.setting.type)
-    return renderer.apply(this)
+    const children = renderer.apply(this);
+    return (
+      <FieldLine id={this.state.id} text={this.props.setting.text} error={this.props.error}>{children}</FieldLine>
+    )
   }
 }
 CompleteField.propTypes = {

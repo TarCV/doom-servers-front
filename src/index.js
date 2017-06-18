@@ -12,6 +12,8 @@ import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { DockableSagaView, createSagaMonitor } from 'redux-saga-devtools';
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 import App from './pages/App';
 import { appReducer } from './reducers';
 

@@ -14,7 +14,12 @@ export class BlockTable extends Component {
     const fixedSettings = this.props.settings || [];
     const items = fixedSettings.map((setting) => {
       const itemOnChange = (event) => { onChangeHandler.apply(null, [{ block: blockName, name: setting.name, value: event.value }]); }
-      return <CompleteField key={setting.name} setting={setting} onChange={itemOnChange} />
+      const error = this.props.errors && this.props.errors[setting.name];
+      return <CompleteField
+        key={setting.name}
+        setting={setting}
+        error={error}
+        onChange={itemOnChange} />
     });
     return (
       <table style={Object.assign({}, tableFullWidth, this.props.style || {})}>
