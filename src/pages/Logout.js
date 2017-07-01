@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Form } from '../components/Form';
+import { Alert } from 'reactstrap';
 
 const loginForm = [
   { name: 'login', text: 'Login', type: 'register.login' },
@@ -20,23 +21,28 @@ class Logout extends Component {
   }
 
   render() {
-    if (this.props.authInfo) {
-      return (<div>
+    if (this.props.error) {
+      return (<Alert color="warning">
+        There were problems logging you out. Will retry in 5 seconds.
+      </Alert>)
+    } else if (this.props.authInfo) {
+      return (<Alert color="info">
         Logging you out
-      </div>)
+      </Alert>)
     } else {
-      return (<div>
+      return (<Alert color="success">
         Successfully logged out
-      </div>)
+      </Alert>)
     }
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    authInfo: {
+    authInfo: state.authentication.token && {
       token: state.authentication.token
-    }
+    },
+    error: state.authentication.logoutError
   };
 };
 

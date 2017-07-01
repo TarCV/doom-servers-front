@@ -1,4 +1,4 @@
-import { call, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, delay, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import FetchPonyfill from 'fetch-ponyfill';
 const { fetch, Request, Response, Headers } = FetchPonyfill();
 
@@ -161,6 +161,8 @@ function* logoutSaga() {
     } catch (e) {
       console.error(e);
       yield put({ type: 'LOGOUT_ERROR', payload: e });
+      yield delay(5000);
+      yield put({ type: 'LOGOUT_ATTEMPT', payload: action.payload });
     }
   })
 }
