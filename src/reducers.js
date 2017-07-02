@@ -26,13 +26,13 @@ function registration(state = {}, action) {
     case a.REGISTER_MAIL_SENT:
       return Object.assign({}, state, {
         mailSent: action.payload.mail,
-        token: action.payload.token
+        token: action.payload.token,
       });
-      case a.REGISTER_ERROR:
-      case a.REGISTER_CHANGEMAIL_ERROR:
-        return Object.assign({}, state, {
-          error: action.payload
-        });
+    case a.REGISTER_ERROR:
+    case a.REGISTER_CHANGEMAIL_ERROR:
+      return Object.assign({}, state, {
+        error: action.payload,
+      });
     default:
       return state;
   }
@@ -44,16 +44,16 @@ function authentication(state = {}, action) {
       return Object.assign({}, state, {
         name: action.payload.login,
         token: action.payload.token,
-        loginError: undefined
+        loginError: undefined,
       });
     case a.LOGIN_ERROR:
       return Object.assign({}, state, {
-        loginError: action.payload
+        loginError: action.payload,
       });
     case a.LOGOUT_ERROR:
-    return Object.assign({}, state, {
-      logoutError: action.payload
-    });
+      return Object.assign({}, state, {
+        logoutError: action.payload,
+      });
     case a.LOGOUT_SUCCESS:
       return {};
     default:
@@ -65,8 +65,8 @@ function location(state = {}, action) {
   switch (action.type) {
     case a.LOCATION_REDIRECT:
       return {
-        redirectTo: action.payload.location
-      }
+        redirectTo: action.payload.location,
+      };
     default:
       return state;
   }
