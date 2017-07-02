@@ -72,11 +72,50 @@ function location(state = {}, action) {
   }
 }
 
+const initialServerListState = {
+  servers: [
+    {
+      id: 'someid',
+      address: '195.100.10.1:10666',
+      name: ']ASTS[ #1',
+      type: 'duel',
+      iwad: 'doom2',
+      iwadAlternatives: ['freedm2'],
+      pwads: [
+        { original: 'astsmc2', alternatives: [] },
+      ],
+      map: {
+        id: 'd5m01',
+        name: 'Dwango5 map01',
+      },
+      players: {
+        maxToJoin: 2,
+        maxTotal: 8,
+        joined: [{ name: 'Bazooka', authenticated: true }],
+        spectates: [{ name: 'BrutalPlayer' }],
+      },
+      progress: {
+        time: { current: 0, limit: 30 },
+        frags: { current: 0, limit: 30 },
+      },
+    },
+  ],
+};
+
 const server = combineReducers({
   initialSettings,
 });
+
+function serverList(state = initialServerListState, action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
 export const appReducer = combineReducers({
   server,
+  serverList,
   registration,
   authentication,
   location,
